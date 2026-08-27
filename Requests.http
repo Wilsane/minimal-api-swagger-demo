@@ -1,13 +1,30 @@
-@middleWareProject_HostAddress = http://localhost:5142
+@host = http://localhost:5142
+@apiKey = dev-local-key-not-a-real-secret
 
-GET {{middleWareProject_HostAddress}}/weatherforecast/
+### Root
+GET {{host}}/
 Accept: application/json
 
-###
-GET {{middleWareProject_HostAddress}}/blogs
 
-###
-POST {{middleWareProject_HostAddress}}/blogs
+### List all blogs
+GET {{host}}/blogs
+Accept: application/json
+
+### Get one blog
+GET {{host}}/blogs/1
+Accept: application/json
+
+### 404 - id does not exist
+GET {{host}}/blogs/999
+Accept: application/json
+
+### 404 - 'abc' fails the {id:int} constraint
+GET {{host}}/blogs/abc
+Accept: application/json
+
+
+### 401 - no key
+POST {{host}}/blogs
 Content-Type: application/json
 
 {
@@ -15,23 +32,122 @@ Content-Type: application/json
   "content": "This is the third blog post."
 }
 
-
-###
-POST {{middleWareProject_HostAddress}}/blogs
+### 401 - wrong key
+POST {{host}}/blogs
 Content-Type: application/json
-X-Api-Key: thisIsASlightlyBadPassword
+X-Api-Key: not-the-right-key
 
 {
   "title": "Third Blog",
   "content": "This is the third blog post."
 }
 
-###
-POST {{middleWareProject_HostAddress}}/blogs
+
+### 400 - empty body object
+POST {{host}}/blogs
 Content-Type: application/json
-X-Api-Key: thisIsAVeryBadPassword
+X-Api-Key: {{apiKey}}
+
+{}
+
+### 400 - title and content too short
+POST {{host}}/blogs
+Content-Type: application/json
+X-Api-Key: {{apiKey}}
+
+{
+  "title": "Hi",
+  "content": "Too short"
+}
+
+### 400 - whitespace only
+POST {{host}}/blogs
+Content-Type: application/json
+X-Api-Key: {{apiKey}}
+
+{
+  "title": "      ",
+  "content": "               "
+}
+
+### 400 - title over 120 characters
+POST {{host}}/blogs
+Content-Type: application/json
+X-Api-Key: {{apiKey}}
+
+{
+  "title": "This title is deliberately far too long to be accepted by the validation rules, which cap a blog title at one hundred and twenty characters in total.",
+  "content": "The content here is perfectly acceptable."
+}
+
+
+### 201 - check the Location header
+POST {{host}}/blogs
+Content-Type: application/json
+X-Api-Key: {{apiKey}}
 
 {
   "title": "Third Blog",
-  "content": "This is the third blog post."
+  "content": "This is the third blog post, and it is long enough to pass validation."
 }
+
+### 200 - replace
+PUT {{host}}/blogs/3
+Content-Type: application/json
+X-Api-Key: {{apiKey}}
+
+{
+  "title": "Third Blog, revised",
+  "content": "The content has been replaced entirely."
+}
+
+### 400 - PUT missing content
+PUT {{host}}/blogs/3
+Content-Type: application/json
+X-Api-Key: {{apiKey}}
+
+{
+  "title": "Only a title supplied"
+}
+
+### 404 - PUT unknown id
+PUT {{host}}/blogs/999
+Content-Type: application/json
+X-Api-Key: {{apiKey}}
+
+{
+  "title": "Does not exist",
+  "content": "This blog was never created in the first place."
+}
+
+### 204 - delete
+DELETE {{host}}/blogs/3
+X-Api-Key: {{apiKey}}
+
+### 404 - delete again
+DELETE {{host}}/blogs/3
+X-Api-Key: {{apiKey}}
+
+
+### Empty the store, then create - checks id generation with no rows
+DELETE {{host}}/blogs/1
+X-Api-Key: {{apiKey}}
+
+###
+DELETE {{host}}/blogs/2
+X-Api-Key: {{apiKey}}
+
+###
+POST {{host}}/blogs
+Content-Type: application/json
+X-Api-Key: {{apiKey}}
+
+{
+  "title": "Created into an empty store",
+  "content": "Checking that id generation works with no existing rows."
+}
+
+
+### 500 as problem+json (Development only)
+GET {{host}}/dev/throw
+Accept: application/json

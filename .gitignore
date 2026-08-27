@@ -1,0 +1,24 @@
+# Build output
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+artifacts/
+
+# User-specific / IDE
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.idea/
+
+# Local secrets — never commit these
+secrets.json
+appsettings.*.Local.json
+*.pfx
+
+# OS noise
+.DS_Store
+Thumbs.db
