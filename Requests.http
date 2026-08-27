@@ -1,0 +1,37 @@
+@middleWareProject_HostAddress = http://localhost:5142
+
+GET {{middleWareProject_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+GET {{middleWareProject_HostAddress}}/blogs
+
+###
+POST {{middleWareProject_HostAddress}}/blogs
+Content-Type: application/json
+
+{
+  "title": "Third Blog",
+  "content": "This is the third blog post."
+}
+
+
+###
+POST {{middleWareProject_HostAddress}}/blogs
+Content-Type: application/json
+X-Api-Key: thisIsASlightlyBadPassword
+
+{
+  "title": "Third Blog",
+  "content": "This is the third blog post."
+}
+
+###
+POST {{middleWareProject_HostAddress}}/blogs
+Content-Type: application/json
+X-Api-Key: thisIsAVeryBadPassword
+
+{
+  "title": "Third Blog",
+  "content": "This is the third blog post."
+}
